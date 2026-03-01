@@ -1,5 +1,6 @@
 from flask import session, Flask, request, redirect, url_for, render_template
-from models import User, db
+from models import Expense, User, db, Income
+from functools import wraps
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "devkey"
@@ -8,6 +9,15 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # INIT DB (สำคัญ)
 db.init_app(app)
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "user_id" not in session:
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated
+
 
 # ROUTES
 @app.route("/")
@@ -75,6 +85,21 @@ def profile():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.route("/transactions")
+@login_required
+def transactions():
+    uid = session["user_id"]
+
+    expenses = Expense.query.filter_by(user_id=uid).all()
+    incomes = Income.query.filter_by(user_id=uid).all()
+
+    return render_template(
+        "transactions.html",
+        expenses=expenses,
+        incomes=incomes
+    )
 
 # 👉 CREATE TABLES (วางตรงนี้)
 with app.app_context():
