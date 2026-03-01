@@ -1,15 +1,69 @@
 {% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+
 {% block content %}
-<h1>Expenses</h1>
-<p>List of all expenses</p>
-<ul>
-  {% for e in expenses %}
-  <li>{{ e.title }} - {{ e.amount }}{% if e.category %} ({{ e.category.name }}){% endif %}</li>
-  {% else %}
-  <li>No expenses yet.</li>
-  {% endfor %}
-</ul>
-{% if session.get('user_id') %}
-<p><a href="{{ url_for('add_expense') }}">Add new expense</a></p>
-{% endif %}
+<div class="space-y-6">
+
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Expenses</h1>
+      <p class="text-sm text-gray-500">Track all your spending</p>
+    </div>
+
+    <a
+      href="{{ url_for('add_expense') }}"
+      class="inline-flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm shadow"
+    >
+      + Add Expense
+    </a>
+  </div>
+
+  <!-- Expenses Card -->
+  <div class="bg-white rounded-2xl shadow overflow-hidden">
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm">
+        <thead class="bg-gray-50 text-gray-600">
+          <tr>
+            <th class="px-6 py-3 text-left font-medium">Title</th>
+            <th class="px-6 py-3 text-left font-medium">Category</th>
+            <th class="px-6 py-3 text-right font-medium">Amount</th>
+            <th class="px-6 py-3 text-right font-medium">Date</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y">
+          {% for e in expenses %}
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-4 font-medium">
+              {{ e.title }}
+            </td>
+
+            <td class="px-6 py-4 text-gray-500">
+              {{ e.category.name if e.category else "-" }}
+            </td>
+
+            <td class="px-6 py-4 text-right font-semibold text-red-500">
+              ฿{{ "{:,.2f}".format(e.amount) }}
+            </td>
+
+            <td class="px-6 py-4 text-right text-gray-500">
+              {{ e.date.strftime("%d %b %Y") }}
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="px-6 py-10 text-center text-gray-400">
+              No expenses yet
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
 {% endblock %}
