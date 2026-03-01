@@ -175,13 +175,16 @@ def logout():
 def transactions():
     uid = session["user_id"]
 
-    expenses = Expense.query.filter_by(user_id=uid).all()
     incomes = Income.query.filter_by(user_id=uid).all()
+    expenses = Expense.query.filter_by(user_id=uid).all()
+
+    # รวม income + expense แล้วเรียงตาม date
+    transactions = incomes + expenses
+    transactions.sort(key=lambda x: x.date, reverse=True)
 
     return render_template(
         "transactions.html",
-        expenses=expenses,
-        incomes=incomes
+        transactions=transactions
     )
 
 

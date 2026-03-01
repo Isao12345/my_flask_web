@@ -1,21 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Transactions</h1>
-<h2>Expenses</h2>
-<ul>
-  {% for e in expenses %}
-  <li>{{ e.title }} - {{ e.amount }}{% if e.category %} ({{ e.category.name }}){% endif %}</li>
-  {% else %}
-  <li>No expenses recorded.</li>
-  {% endfor %}
-</ul>
 
-<h2>Income</h2>
-<ul>
-  {% for i in incomes %}
-  <li>{{ i.title }} - {{ i.amount }}{% if i.category %} ({{ i.category.name }}){% endif %}</li>
-  {% else %}
-  <li>No income recorded.</li>
+<div class="max-w-xl mx-auto px-4 py-6">
+
+  <h1 class="text-xl font-semibold mb-4">Transactions</h1>
+  <p class="text-sm text-gray-500 mb-6">All your income & expenses</p>
+
+  {% set last_date = None %}
+
+  {% for t in transactions %}
+    {% set d = t.date.strftime("%d %b %Y") %}
+
+    {% if d != last_date %}
+      <p class="text-sm text-gray-400 mt-6 mb-2">{{ d }}</p>
+      {% set last_date = d %}
+    {% endif %}
+
+    <div class="bg-white rounded-2xl p-4 shadow-sm flex justify-between items-center mb-2">
+      <div>
+        <p class="font-medium">{{ t.title }}</p>
+       
+      </div>
+
+      {% if t.__class__.__name__ == "Income" %}
+        <p class="text-green-500 font-semibold">
+          +฿{{ "%.2f"|format(t.amount) }}
+        </p>
+      {% else %}
+        <p class="text-red-500 font-semibold">
+          -฿{{ "%.2f"|format(t.amount) }}
+        </p>
+      {% endif %}
+    </div>
+
   {% endfor %}
-</ul>
+
+</div>
+
 {% endblock %}

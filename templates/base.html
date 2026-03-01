@@ -1,32 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Expense Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <title>{% block title %}Expense Tracker{% endblock %}</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-   <nav>
-  {% if session.get('user_id') %}
-    <a href="{{ url_for('dashboard') }}">Dashboard</a> |
-    <a href="{{ url_for('transactions') }}">Transactions</a> |
-    <a href="{{ url_for('expenses') }}">Expenses</a> |
-    <a href="{{ url_for('income') }}">Income</a> |
-    <a href="{{ url_for('categories') }}">Categories</a> |
-    <a href="{{ url_for('profile') }}">Profile</a> |
-    <a href="{{ url_for('logout') }}">Logout</a>
-  {% else %}
-    <a href="{{ url_for('login') }}">Login</a> |
-    <a href="{{ url_for('register') }}">Register</a>
-  {% endif %}
+
+<body class="bg-gray-100 text-gray-800">
+
+<!-- Navbar -->
+<nav class="bg-white shadow">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center gap-6">
+    <span class="font-semibold text-blue-600">Expense Tracker</span>
+
+    <a href="/" class="text-sm hover:text-blue-600">Dashboard</a>
+    <a href="/transactions" class="text-sm hover:text-blue-600">Transactions</a>
+    <a href="/expenses" class="text-sm hover:text-blue-600">Expenses</a>
+    <a href="/income" class="text-sm hover:text-blue-600">Income</a>
+    <a href="/profile" class="text-sm hover:text-blue-600">Profile</a>
+
+    <a href="/logout" class="ml-auto text-sm text-red-500 hover:underline">
+      Logout
+    </a>
+  </div>
 </nav>
-<hr>
-    {% block content %}{% endblock %}
-    {% block scripts %}{% endblock %}
+
+<!-- Main content -->
+<main class="max-w-6xl mx-auto px-6 py-8">
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="text-center text-sm text-gray-400 py-6">
+  © 2026 Expense Tracker
+</footer>
+
 </body>
 </html>
-
-<footer>
-  <hr>
-  <p>&copy; 2026 Expense Tracker</p>
-</footer>
