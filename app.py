@@ -101,6 +101,22 @@ def transactions():
         incomes=incomes
     )
 
+
+@app.route("/expenses/add", methods=["GET", "POST"])
+@login_required
+def add_expense():
+    if request.method == "POST":
+        expense = Expense(
+            title=request.form["title"],
+            amount=float(request.form["amount"]),
+            user_id=session["user_id"]
+        )
+        db.session.add(expense)
+        db.session.commit()
+        return redirect(url_for("transactions"))
+
+    return render_template("add_expense.html")
+
 # 👉 CREATE TABLES (วางตรงนี้)
 with app.app_context():
     db.create_all()
