@@ -1,5 +1,66 @@
 {% extends "base.html" %}
+{% block title %}About{% endblock %}
+
 {% block content %}
-<h1>About</h1>
-<p>This is a simple expense tracker built with Flask.</p>
+<div class="min-h-[60vh] flex items-center justify-center">
+
+  <div class="max-w-2xl w-full bg-white rounded-2xl shadow p-8 space-y-6">
+
+    <!-- Header -->
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-800">About Expense Tracker</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Simple. Clear. In control.
+      </p>
+    </div>
+
+    <!-- Description -->
+    <div class="space-y-4 text-gray-600 leading-relaxed">
+      <p>
+        Expense Tracker is a personal finance dashboard built to help you
+        track your <span class="font-medium text-gray-800">income</span> and
+        <span class="font-medium text-gray-800">expenses</span> effortlessly.
+      </p>
+
+      <p>
+        The goal is to give you a clear overview of your financial activity
+        with a clean interface, monthly insights, and easy-to-use tools —
+        without unnecessary complexity.
+      </p>
+    </div>
+
+    <!-- Features -->
+    <div class="pt-4 border-t">
+      <h2 class="text-sm font-semibold text-gray-700 mb-3">
+        Key Features
+      </h2>
+
+      <ul class="grid sm:grid-cols-2 gap-3 text-sm text-gray-600">
+        <li class="flex items-center gap-2">
+          <span class="text-green-500">●</span>
+          Track income & expenses
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-green-500">●</span>
+          Monthly summaries & charts
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-green-500">●</span>
+          Category management
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="text-green-500">●</span>
+          Clean dashboard experience
+        </li>
+      </ul>
+    </div>
+
+    <!-- Footer note -->
+    <div class="pt-6 text-xs text-gray-400 text-center">
+      Built with Flask & Tailwind CSS · © 2026
+    </div>
+
+  </div>
+
+</div>
 {% endblock %}
