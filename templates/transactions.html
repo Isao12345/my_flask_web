@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Transactions</h1>
+<h2>Expenses</h2>
+<ul>
+  {% for e in expenses %}
+  <li>{{ e.title }} - {{ e.amount }}</li>
+  {% else %}
+  <li>No expenses recorded.</li>
+  {% endfor %}
+</ul>
+
+<h2>Income</h2>
+<ul>
+  {% for i in incomes %}
+  <li>{{ i.title }} - {{ i.amount }}</li>
+  {% else %}
+  <li>No income recorded.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

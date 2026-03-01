@@ -2,4 +2,14 @@
 {% block content %}
 <h1>Income</h1>
 <p>List of all income</p>
+<ul>
+  {% for i in incomes %}
+  <li>{{ i.title }} - {{ i.amount }}</li>
+  {% else %}
+  <li>No income yet.</li>
+  {% endfor %}
+</ul>
+{% if session.get('user_id') %}
+<p><a href="{{ url_for('add_income') }}">Add new income</a></p>
+{% endif %}
 {% endblock %}

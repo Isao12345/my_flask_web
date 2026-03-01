@@ -2,4 +2,14 @@
 {% block content %}
 <h1>Expenses</h1>
 <p>List of all expenses</p>
+<ul>
+  {% for e in expenses %}
+  <li>{{ e.title }} - {{ e.amount }}</li>
+  {% else %}
+  <li>No expenses yet.</li>
+  {% endfor %}
+</ul>
+{% if session.get('user_id') %}
+<p><a href="{{ url_for('add_expense') }}">Add new expense</a></p>
+{% endif %}
 {% endblock %}

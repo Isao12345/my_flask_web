@@ -18,6 +18,13 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+# make current_user available in all templates
+@app.context_processor
+def inject_user():
+    if "user_id" in session:
+        return {"current_user": User.query.get(session["user_id"])}
+    return {}
+
 
 # ROUTES
 @app.route("/")
@@ -31,13 +38,19 @@ def about():
 
 
 @app.route("/expenses")
+@login_required
 def expenses():
-    return render_template("expenses.html")
+    uid = session["user_id"]
+    expenses = Expense.query.filter_by(user_id=uid).all()
+    return render_template("expenses.html", expenses=expenses)
 
 
 @app.route("/income")
+@login_required
 def income():
-    return render_template("income.html")
+    uid = session["user_id"]
+    incomes = Income.query.filter_by(user_id=uid).all()
+    return render_template("income.html", incomes=incomes)
 
 
 @app.route("/categories")
@@ -47,13 +60,27 @@ def categories():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    # Redirect already-logged-in users straight to dashboard
     if "user_id" in session:
         return redirect(url_for("dashboard"))
-    return render_template("login.html")
+
+    error = None
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password):
+            session["user_id"] = user.id
+            return redirect(url_for("dashboard"))
+        else:
+            error = "Invalid credentials"
+
+    return render_template("login.html", error=error)
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    error = None
     if request.method == "POST":
         username = request.form["username"]
         email = request.form["email"]
@@ -63,17 +90,15 @@ def register():
         if User.query.filter(
             (User.username == username) | (User.email == email)
         ).first():
-            return "User already exists"
+            error = "Username or email already taken"
+        else:
+            user = User(username=username, email=email)
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for("login"))
 
-        user = User(username=username, email=email)
-        user.set_password(password)
-
-        db.session.add(user)
-        db.session.commit()
-
-        return redirect(url_for("login"))
-
-    return render_template("register.html", error="User already exists")
+    return render_template("register.html", error=error)
 
 
 @app.route("/profile")
