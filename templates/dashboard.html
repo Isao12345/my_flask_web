@@ -4,8 +4,46 @@
 {% if current_user %}
 <p>Welcome, {{ current_user.username }}!</p>
 <p>Your dashboard gives you quick access to your transactions.</p>
+<!-- commit: added canvas for monthly totals chart -->
+<canvas id="monthlyChart" width="400" height="200"></canvas>
 {% else %}
 <p>Track your income and expenses easily.</p>
 <p><a href="{{ url_for('login') }}">Log in</a> or <a href="{{ url_for('register') }}">register</a> to get started.</p>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// commit: render bar chart using data provided by dashboard route
+const labels = {{ labels|tojson }};
+const incomes = {{ income_values|tojson }};
+const expenses = {{ expense_values|tojson }};
+const ctx = document.getElementById('monthlyChart');
+if (ctx) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Income',
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    data: incomes,
+                },
+                {
+                    label: 'Expense',
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    data: expenses,
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+}
+</script>
 {% endblock %}

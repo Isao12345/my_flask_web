@@ -1,6 +1,9 @@
 from flask import session, Flask, request, redirect, url_for, render_template
 from models import Expense, User, db, Income, Category
 from functools import wraps
+from datetime import datetime
+from collections import defaultdict
+# commit: import datetime and defaultdict for later chart calculations
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "devkey"
@@ -29,7 +32,31 @@ def inject_user():
 # ROUTES
 @app.route("/")
 def dashboard():
-    return render_template("dashboard.html")
+    # commit: compute monthly totals for chart if user logged in
+    labels = []
+    income_values = []
+    expense_values = []
+    if "user_id" in session:
+        uid = session["user_id"]
+        incs = Income.query.filter_by(user_id=uid).all()
+        exps = Expense.query.filter_by(user_id=uid).all()
+        monthly = defaultdict(lambda: {"income": 0, "expense": 0})
+        for i in incs:
+            key = i.date.strftime("%Y-%m")
+            monthly[key]["income"] += i.amount
+        for e in exps:
+            key = e.date.strftime("%Y-%m")
+            monthly[key]["expense"] += e.amount
+        sorted_keys = sorted(monthly.keys())
+        labels = sorted_keys
+        income_values = [monthly[k]["income"] for k in sorted_keys]
+        expense_values = [monthly[k]["expense"] for k in sorted_keys]
+    return render_template(
+        "dashboard.html",
+        labels=labels,
+        income_values=income_values,
+        expense_values=expense_values,
+    )
 
 
 @app.route("/about")
@@ -166,11 +193,21 @@ def add_expense():
     cats = Category.query.filter_by(user_id=uid, type="expense").all()
     if request.method == "POST":
         category_id = request.form.get("category_id")
+        # commit: allow optional entry date
+        date_str = request.form.get("date")
+        extra = {}
+        if category_id:
+            extra["category_id"] = int(category_id)
+        if date_str:
+            try:
+                extra["date"] = datetime.fromisoformat(date_str)
+            except ValueError:
+                pass
         expense = Expense(
             title=request.form["title"],
             amount=float(request.form["amount"]),
             user_id=uid,
-            **({"category_id": int(category_id)} if category_id else {})
+            **extra
         )
         db.session.add(expense)
         db.session.commit()
@@ -186,11 +223,20 @@ def add_income():
     cats = Category.query.filter_by(user_id=uid, type="income").all()
     if request.method == "POST":
         category_id = request.form.get("category_id")
+        date_str = request.form.get("date")
+        extra = {}
+        if category_id:
+            extra["category_id"] = int(category_id)
+        if date_str:
+            try:
+                extra["date"] = datetime.fromisoformat(date_str)
+            except ValueError:
+                pass
         income = Income(
             title=request.form["title"],
             amount=float(request.form["amount"]),
             user_id=uid,
-            **({"category_id": int(category_id)} if category_id else {})
+            **extra
         )
         db.session.add(income)
         db.session.commit()
