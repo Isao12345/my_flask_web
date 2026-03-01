@@ -4,7 +4,7 @@
 <p>List of all expenses</p>
 <ul>
   {% for e in expenses %}
-  <li>{{ e.title }} - {{ e.amount }}</li>
+  <li>{{ e.title }} - {{ e.amount }}{% if e.category %} ({{ e.category.name }}){% endif %}</li>
   {% else %}
   <li>No expenses yet.</li>
   {% endfor %}

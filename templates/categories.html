@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
 <h1>Categories</h1>
-<p>Manage income and expense categories</p>
+{% if error %}
+<p style="color:red">{{ error }}</p>
+{% endif %}
+<ul>
+  {% for c in categories %}
+  <li>{{ c.name }} ({{ c.type }})
+      <form method="post" action="{{ url_for('delete_category', cat_id=c.id) }}" style="display:inline">
+        <button type="submit" onclick="return confirm('Delete category?');">x</button>
+      </form>
+  </li>
+  {% else %}
+  <li>No categories defined yet.</li>
+  {% endfor %}
+</ul>
+
+<h2>Add category</h2>
+<form method="post">
+  <input name="name" placeholder="Name" required>
+  <select name="type">
+    <option value="expense">Expense</option>
+    <option value="income">Income</option>
+  </select>
+  <button type="submit">Create</button>
+</form>
 {% endblock %}

@@ -1,5 +1,5 @@
 from flask import session, Flask, request, redirect, url_for, render_template
-from models import Expense, User, db, Income
+from models import Expense, User, db, Income, Category
 from functools import wraps
 
 app = Flask(__name__)
@@ -53,9 +53,38 @@ def income():
     return render_template("income.html", incomes=incomes)
 
 
-@app.route("/categories")
+@app.route("/categories", methods=["GET", "POST"])
+@login_required
 def categories():
-    return render_template("categories.html")
+    uid = session["user_id"]
+    error = None
+    if request.method == "POST":
+        name = request.form["name"].strip()
+        ctype = request.form.get("type")
+        if not name or ctype not in ("income", "expense"):
+            error = "Invalid category data"
+        else:
+            # avoid duplicates for same user/type
+            if Category.query.filter_by(user_id=uid, name=name, type=ctype).first():
+                error = "Category already exists"
+            else:
+                cat = Category(name=name, type=ctype, user_id=uid)
+                db.session.add(cat)
+                db.session.commit()
+                return redirect(url_for("categories"))
+
+    cats = Category.query.filter_by(user_id=uid).all()
+    return render_template("categories.html", categories=cats, error=error)
+
+@app.route("/categories/delete/<int:cat_id>", methods=["POST"])
+@login_required
+def delete_category(cat_id):
+    uid = session["user_id"]
+    cat = Category.query.get(cat_id)
+    if cat and cat.user_id == uid:
+        db.session.delete(cat)
+        db.session.commit()
+    return redirect(url_for("categories"))
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -132,33 +161,42 @@ def transactions():
 @app.route("/expenses/add", methods=["GET", "POST"])
 @login_required
 def add_expense():
+    uid = session["user_id"]
+    # load expense categories for dropdown
+    cats = Category.query.filter_by(user_id=uid, type="expense").all()
     if request.method == "POST":
+        category_id = request.form.get("category_id")
         expense = Expense(
             title=request.form["title"],
             amount=float(request.form["amount"]),
-            user_id=session["user_id"]
+            user_id=uid,
+            **({"category_id": int(category_id)} if category_id else {})
         )
         db.session.add(expense)
         db.session.commit()
         return redirect(url_for("transactions"))
 
-    return render_template("add_expense.html")
+    return render_template("add_expense.html", categories=cats)
 
 
 @app.route("/income/add", methods=["GET", "POST"])
 @login_required
 def add_income():
+    uid = session["user_id"]
+    cats = Category.query.filter_by(user_id=uid, type="income").all()
     if request.method == "POST":
+        category_id = request.form.get("category_id")
         income = Income(
             title=request.form["title"],
             amount=float(request.form["amount"]),
-            user_id=session["user_id"]
+            user_id=uid,
+            **({"category_id": int(category_id)} if category_id else {})
         )
         db.session.add(income)
         db.session.commit()
         return redirect(url_for("transactions"))
 
-    return render_template("add_income.html")
+    return render_template("add_income.html", categories=cats)
 
 # 👉 CREATE TABLES (วางตรงนี้)
 with app.app_context():

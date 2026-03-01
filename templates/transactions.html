@@ -4,7 +4,7 @@
 <h2>Expenses</h2>
 <ul>
   {% for e in expenses %}
-  <li>{{ e.title }} - {{ e.amount }}</li>
+  <li>{{ e.title }} - {{ e.amount }}{% if e.category %} ({{ e.category.name }}){% endif %}</li>
   {% else %}
   <li>No expenses recorded.</li>
   {% endfor %}
@@ -13,7 +13,7 @@
 <h2>Income</h2>
 <ul>
   {% for i in incomes %}
-  <li>{{ i.title }} - {{ i.amount }}</li>
+  <li>{{ i.title }} - {{ i.amount }}{% if i.category %} ({{ i.category.name }}){% endif %}</li>
   {% else %}
   <li>No income recorded.</li>
   {% endfor %}

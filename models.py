@@ -40,6 +40,8 @@ class Income(db.Model):
     title = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    category = db.relationship("Category")
 
 
 class Expense(db.Model):
@@ -47,3 +49,5 @@ class Expense(db.Model):
     title = db.Column(db.String(100), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
+    category = db.relationship("Category")

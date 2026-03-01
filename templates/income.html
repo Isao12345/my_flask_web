@@ -4,7 +4,7 @@
 <p>List of all income</p>
 <ul>
   {% for i in incomes %}
-  <li>{{ i.title }} - {{ i.amount }}</li>
+  <li>{{ i.title }} - {{ i.amount }}{% if i.category %} ({{ i.category.name }}){% endif %}</li>
   {% else %}
   <li>No income yet.</li>
   {% endfor %}
