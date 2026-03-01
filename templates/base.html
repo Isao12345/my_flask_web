@@ -6,18 +6,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <nav>
-        <a href="/">Dashboard</a> |
-        <a href="/expenses">Expenses</a> |
-        <a href="/income">Income</a> |
-        <a href="/categories">Categories</a> |
-        <a href="/about">About</a>
-        <a href="/login">Login</a> |
-        <a href="/register">Register</a> |
-        <a href="/profile">Profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </nav>
-    <hr>
+   <nav>
+  <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+  <a href="{{ url_for('transactions') }}">Transactions</a> |
+  <a href="{{ url_for('expenses') }}">Expenses</a> |
+  <a href="{{ url_for('income') }}">Income</a> |
+  <a href="{{ url_for('profile') }}">Profile</a> |
+  <a href="{{ url_for('logout') }}">Logout</a>
+</nav>
+<hr>
     {% block content %}{% endblock %}
 </body>
 </html>
