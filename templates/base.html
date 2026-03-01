@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="/">Dashboard</a> |
+        <a href="/expenses">Expenses</a> |
+        <a href="/income">Income</a> |
+        <a href="/categories">Categories</a> |
+        <a href="/about">About</a>
+    </nav>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>
