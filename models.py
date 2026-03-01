@@ -14,3 +14,14 @@ class Category(db.Model):
     name = db.Column(db.String(50), nullable=False)
     type = db.Column(db.String(10), nullable=False)  # income / expense
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    amount = db.Column(db.Float, nullable=False)
+    note = db.Column(db.String(200))
+    date = db.Column(db.String(20))
+    type = db.Column(db.String(10))  # income / expense
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    category_id = db.Column(db.Integer, db.ForeignKey("category.id"))
