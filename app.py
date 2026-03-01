@@ -1,5 +1,5 @@
-from flask import Flask, render_template
-from models import db   # ใช้ db จาก models เท่านั้น
+from flask import Flask, request, redirect, url_for, render_template
+from models import User, db
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "devkey"
@@ -36,6 +36,25 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        # ตรวจซ้ำ (กัน username/email ซ้ำ)
+        if User.query.filter(
+            (User.username == username) | (User.email == email)
+        ).first():
+            return "User already exists"
+
+        user = User(username=username, email=email)
+        user.set_password(password)
+
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for("login"))
+
     return render_template("register.html")
 
 @app.route("/profile")
