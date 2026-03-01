@@ -14,25 +14,33 @@ db.init_app(app)
 def dashboard():
     return render_template("dashboard.html")
 
+
 @app.route("/about")
 def about():
     return render_template("about.html")
+
 
 @app.route("/expenses")
 def expenses():
     return render_template("expenses.html")
 
+
 @app.route("/income")
 def income():
     return render_template("income.html")
+
 
 @app.route("/categories")
 def categories():
     return render_template("categories.html")
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "user_id" in session:
+        return redirect(url_for("dashboard"))
     return render_template("login.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -56,6 +64,7 @@ def register():
         return redirect(url_for("login"))
 
     return render_template("register.html", error="User already exists")
+
 
 @app.route("/profile")
 def profile():
