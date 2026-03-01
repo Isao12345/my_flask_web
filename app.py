@@ -77,8 +77,10 @@ def register():
 
 
 @app.route("/profile")
+@login_required
 def profile():
-    return render_template("profile.html")
+    user = User.query.get(session["user_id"])
+    return render_template("profile.html", user=user)
 
 
 @app.route("/logout")
