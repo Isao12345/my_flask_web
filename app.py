@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import session, Flask, request, redirect, url_for, render_template
 from models import User, db
 
 app = Flask(__name__)
@@ -60,6 +60,12 @@ def register():
 @app.route("/profile")
 def profile():
     return render_template("profile.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 # 👉 CREATE TABLES (วางตรงนี้)
 with app.app_context():
