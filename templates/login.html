@@ -1,14 +1,71 @@
 {% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
 {% block content %}
-<h1>Login</h1>
-{% if error %}
-<p style="color: red;">{{ error }}</p>
-{% endif %}
-<form method="post">
-    <label>Username</label><br>
-    <input type="text" name="username"><br><br>
-    <label>Password</label><br>
-    <input type="password" name="password"><br><br>
-    <button type="submit">Login</button>
-</form>
+<div class="min-h-[70vh] flex items-center justify-center">
+
+  <div class="w-full max-w-md bg-white rounded-2xl shadow p-8 space-y-6">
+
+    <!-- Header -->
+    <div class="text-center">
+      <h1 class="text-2xl font-semibold text-gray-800">Welcome back</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Sign in to your account
+      </p>
+    </div>
+
+    <!-- Error -->
+    {% if error %}
+    <div class="bg-red-100 text-red-700 text-sm px-4 py-2 rounded-lg">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post" class="space-y-4">
+
+      <!-- Username -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Username</label>
+        <input
+          type="text"
+          name="username"
+          required
+          class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        >
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Password</label>
+        <input
+          type="password"
+          name="password"
+          required
+          class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        >
+      </div>
+
+      <!-- Actions -->
+      <div class="pt-2">
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm font-medium shadow transition"
+        >
+          Login
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <div class="text-center text-sm text-gray-500">
+      Don’t have an account?
+      <a href="{{ url_for('register') }}" class="text-blue-600 hover:underline">
+        Register
+      </a>
+    </div>
+
+  </div>
+
+</div>
 {% endblock %}
