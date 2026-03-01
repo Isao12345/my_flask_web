@@ -31,28 +31,38 @@ def inject_user():
 
 # ROUTES
 @app.route("/")
+@login_required
 def dashboard():
-    # commit: compute monthly totals for chart if user logged in
-    labels = []
-    income_values = []
-    expense_values = []
-    if "user_id" in session:
-        uid = session["user_id"]
-        incs = Income.query.filter_by(user_id=uid).all()
-        exps = Expense.query.filter_by(user_id=uid).all()
-        monthly = defaultdict(lambda: {"income": 0, "expense": 0})
-        for i in incs:
-            key = i.date.strftime("%Y-%m")
-            monthly[key]["income"] += i.amount
-        for e in exps:
-            key = e.date.strftime("%Y-%m")
-            monthly[key]["expense"] += e.amount
-        sorted_keys = sorted(monthly.keys())
-        labels = sorted_keys
-        income_values = [monthly[k]["income"] for k in sorted_keys]
-        expense_values = [monthly[k]["expense"] for k in sorted_keys]
+    uid = session["user_id"]
+
+    incomes = Income.query.filter_by(user_id=uid).all()
+    expenses = Expense.query.filter_by(user_id=uid).all()
+
+    # ===== ตัวเลขด้านบน =====
+    total_income = sum(i.amount for i in incomes)
+    total_expense = sum(e.amount for e in expenses)
+    balance = total_income - total_expense
+
+    # ===== กราฟรายเดือน =====
+    monthly = defaultdict(lambda: {"income": 0, "expense": 0})
+
+    for i in incomes:
+        key = i.date.strftime("%Y-%m")
+        monthly[key]["income"] += i.amount
+
+    for e in expenses:
+        key = e.date.strftime("%Y-%m")
+        monthly[key]["expense"] += e.amount
+
+    labels = sorted(monthly.keys())
+    income_values = [monthly[k]["income"] for k in labels]
+    expense_values = [monthly[k]["expense"] for k in labels]
+
     return render_template(
         "dashboard.html",
+        balance=balance,
+        income=total_income,
+        expenses=total_expense,
         labels=labels,
         income_values=income_values,
         expense_values=expense_values,
