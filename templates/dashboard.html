@@ -10,7 +10,8 @@
   <div class="bg-white rounded-xl shadow p-6">
     <p class="text-gray-500 text-sm">Balance</p>
     <p class="text-3xl font-bold text-blue-600 mt-2">
-      ฿{{ balance }}
+      ฿{{ "{:,.2f}".format(balance)}}
+
     </p>
   </div>
 
@@ -18,7 +19,8 @@
   <div class="bg-white rounded-xl shadow p-6">
     <p class="text-gray-500 text-sm">Income</p>
     <p class="text-3xl font-bold text-green-600 mt-2">
-      ฿{{ income }}
+      ฿{{ "{:,.2f}".format(income)}}
+
     </p>
   </div>
 
@@ -26,9 +28,93 @@
   <div class="bg-white rounded-xl shadow p-6">
     <p class="text-gray-500 text-sm">Expenses</p>
     <p class="text-3xl font-bold text-red-500 mt-2">
-      ฿{{ expenses }}
+      ฿{{ "{:,.2f}".format(expenses) }}
     </p>
   </div>
 
 </div>
+
+
+<!-- bar -->
+
+<div class="grid grid-cols-12 gap-6 mt-8">
+
+  <!-- Chart -->
+  <div class="col-span-12 md:col-span-6 md:col-start-4">
+    
+    <div class="col-span-12 md:col-span-6 md:col-start-4 max-w-2xl mx-auto">
+    
+    
+    <div class="bg-white rounded-xl shadow p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold">
+          Monthly Income vs Expense
+        </h2>
+
+        <!-- Month filter -->
+        <form method="get">
+          <select name="month"
+                  onchange="this.form.submit()"
+                  class="border rounded-lg px-3 py-1 text-sm">
+            <option value="">All months</option>
+            {% for m in labels %}
+              <option value="{{ m }}"
+                {% if m == selected_month %}selected{% endif %}>
+                {{ m }}
+              </option>
+            {% endfor %}
+          </select>
+        </form>
+      </div>
+
+      <canvas id="monthlyChart" height="120"></canvas>
+    </div>
+  </div>
+
+
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const labels = {{ labels | tojson }};
+const incomeData = {{ income_values | tojson }};
+const expenseData = {{ expense_values | tojson }};
+
+new Chart(document.getElementById("monthlyChart"), {
+  type: "bar",
+  data: {
+    labels: labels,
+    datasets: [
+      {
+        label: "Income",
+        data: incomeData,
+        backgroundColor: "rgba(34,197,94,0.8)",
+        borderRadius: 6
+      },
+      {
+        label: "Expense",
+        data: expenseData,
+        backgroundColor: "rgba(239,68,68,0.8)",
+        borderRadius: 6
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: value => "฿" + value.toLocaleString()
+        }
+      }
+    }
+  }
+});
+</script>
+
 {% endblock %}

@@ -34,16 +34,11 @@ def inject_user():
 @login_required
 def dashboard():
     uid = session["user_id"]
+    selected_month = request.args.get("month")
 
     incomes = Income.query.filter_by(user_id=uid).all()
     expenses = Expense.query.filter_by(user_id=uid).all()
 
-    # ===== ตัวเลขด้านบน =====
-    total_income = sum(i.amount for i in incomes)
-    total_expense = sum(e.amount for e in expenses)
-    balance = total_income - total_expense
-
-    # ===== กราฟรายเดือน =====
     monthly = defaultdict(lambda: {"income": 0, "expense": 0})
 
     for i in incomes:
@@ -54,9 +49,20 @@ def dashboard():
         key = e.date.strftime("%Y-%m")
         monthly[key]["expense"] += e.amount
 
-    labels = sorted(monthly.keys())
-    income_values = [monthly[k]["income"] for k in labels]
-    expense_values = [monthly[k]["expense"] for k in labels]
+    all_months = sorted(monthly.keys())
+
+    if selected_month:
+        labels = [selected_month]
+        income_values = [monthly[selected_month]["income"]]
+        expense_values = [monthly[selected_month]["expense"]]
+    else:
+        labels = all_months
+        income_values = [monthly[k]["income"] for k in labels]
+        expense_values = [monthly[k]["expense"] for k in labels]
+
+    total_income = sum(i.amount for i in incomes)
+    total_expense = sum(e.amount for e in expenses)
+    balance = total_income - total_expense
 
     return render_template(
         "dashboard.html",
@@ -66,6 +72,8 @@ def dashboard():
         labels=labels,
         income_values=income_values,
         expense_values=expense_values,
+        all_months=all_months,
+        selected_month=selected_month
     )
 
 
